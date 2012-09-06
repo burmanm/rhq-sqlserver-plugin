@@ -31,6 +31,11 @@
       </plugin-configuration>
 	  <process-scan name="windows" query="process|basename|match=^sqlservr.*" />
 
+      <service name="Database" class="MSSQLDatabaseComponent" discovery="MSSQLDatabaseDiscoveryComponent">
+         <plugin-configuration>
+            <c:simple-property name="databaseName" displayName="Database Name" readOnly="true" />
+         </plugin-configuration>
+
           <service name="Query"
                    class="org.rhq.plugins.database.CustomTableComponent"
                    discovery="org.rhq.plugins.database.CustomTableDiscoveryComponent"
@@ -46,6 +51,7 @@
               <metric property="metricColumn" displayName="Metric Value" displayType="summary" description="The metric value for this Query. If Metric Query is not specified, this is not collected."/>
 
           </service>
+      </service>
            
    </server>
 
