@@ -10,11 +10,12 @@ import org.apache.commons.logging.LogFactory;
 import org.rhq.core.domain.measurement.AvailabilityType;
 import org.rhq.core.pluginapi.availability.AvailabilityFacet;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
+import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.plugins.database.DatabaseComponent;
 import org.rhq.plugins.database.DatabaseQueryUtility;
 
-public class MSSQLDatabaseComponent implements DatabaseComponent<MSSQLServerComponent<?>>, AvailabilityFacet {
+public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements DatabaseComponent<MSSQLServerComponent<?>>, AvailabilityFacet {
 
     private static Log log = LogFactory.getLog(MSSQLDatabaseComponent.class);
 	
@@ -63,6 +64,10 @@ public class MSSQLDatabaseComponent implements DatabaseComponent<MSSQLServerComp
 		}
 		
 		return result;
+	}
+	
+	public String getDatabaseName() {
+		return this.databaseName;
 	}
 
     @Override
