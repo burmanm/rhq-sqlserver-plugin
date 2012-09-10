@@ -28,7 +28,7 @@ public class MSSQLDatabaseDiscoveryComponent implements ResourceDiscoveryCompone
             while (resultSet.next()) {
                 String databaseName = resultSet.getString("DATABASE_NAME");
                 DiscoveredResourceDetails database = new DiscoveredResourceDetails(context.getResourceType(),
-                    databaseName, databaseName, null, "The " + databaseName + " SQL Server Database Instance", null, null);
+                    databaseName, databaseName, null, "The " + databaseName + " database", null, null);
                 database.getPluginConfiguration().put(new PropertySimple("databaseName", databaseName));
                 databases.add(database);
             }

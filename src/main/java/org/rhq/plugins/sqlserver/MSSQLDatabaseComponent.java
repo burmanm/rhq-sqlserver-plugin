@@ -1,9 +1,9 @@
 package org.rhq.plugins.sqlserver;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,7 +20,7 @@ public class MSSQLDatabaseComponent implements DatabaseComponent<MSSQLServerComp
 	
 	private MSSQLServerComponent<?> serverComponent;
 	private String databaseName;
-	private static String STATUS_COLUMN = "databaseStatus";
+	private static String STATUS_COLUMN = "state_desc";
 	private static String AVAILABLE_STATUS = "ONLINE";
 	
 	
@@ -41,20 +41,23 @@ public class MSSQLDatabaseComponent implements DatabaseComponent<MSSQLServerComp
 
 		AvailabilityType result = AvailabilityType.DOWN;
 		
-		Statement statement = null;
+		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		try {
 			Connection conn = getConnection();
-			statement = conn.createStatement();
-
-			resultSet = statement.executeQuery("SELECT DATABASEPROPERTYEX('" + databaseName + "', 'Status') AS " + STATUS_COLUMN);
-			String status = resultSet.getString(STATUS_COLUMN);
-
-			if(status.equals(AVAILABLE_STATUS)) {
-				result = AvailabilityType.UP;
+			statement = conn.prepareStatement("SELECT state_desc FROM sys.databases WHERE name = ?");
+			statement.setString(1, databaseName);
+			resultSet = statement.executeQuery();
+			
+			while(resultSet.next()) {
+				String status = resultSet.getString(STATUS_COLUMN);				
+				if(status.equals(AVAILABLE_STATUS)) {
+					result = AvailabilityType.UP;
+				}
+				break;
 			}
 		} catch (SQLException e) {
-			log.debug("Received SQLException while executing status, ", e);
+			log.error("Received SQLException while executing status, ", e);
 		} finally {
 			DatabaseQueryUtility.close(statement, resultSet);
 		}
