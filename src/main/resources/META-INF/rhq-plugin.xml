@@ -37,8 +37,8 @@
          </plugin-configuration>
 
           <service name="Query"
-                   class="org.rhq.plugins.sqlserver.MSSQLTableComponent"
-                   discovery="org.rhq.plugins.sqlserver.MSSQLTableDiscoveryComponent"
+                   class="MSSQLTableComponent"
+                   discovery="MSSQLTableDiscoveryComponent"
                    supportsManualAdd="true">
 
               <plugin-configuration>
