@@ -37,7 +37,7 @@ public class MSSQLTableDiscoveryComponent implements ResourceDiscoveryComponent<
 				resultSet = statement.executeQuery();
 				
 				while(resultSet.next()) {
-		            String tableName = resultSet.getString(1);
+		            String tableName = resultSet.getString("table_name");
 		            DiscoveredResourceDetails service = new DiscoveredResourceDetails(context.getResourceType(), tableName,
 		                    tableName, null, null, null, null);
 		                service.getPluginConfiguration().put(new PropertySimple("tableName", tableName));

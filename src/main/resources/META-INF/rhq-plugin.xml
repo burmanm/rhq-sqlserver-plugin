@@ -36,9 +36,17 @@
             <c:simple-property name="databaseName" displayName="Database Name" readOnly="true" />
          </plugin-configuration>
 
+         <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
+                  description="Database table">
+
+            <plugin-configuration>
+               <c:simple-property name="tableName" readOnly="true" />
+            </plugin-configuration>
+         </service>
+
           <service name="Query"
-                   class="MSSQLTableComponent"
-                   discovery="MSSQLTableDiscoveryComponent"
+                   class="org.rhq.plugins.database.CustomTableComponent"
+                   discovery="org.rhq.plugins.database.CustomTableDiscoveryComponent"
                    supportsManualAdd="true">
 
               <plugin-configuration>
