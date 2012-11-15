@@ -1,66 +1,95 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<plugin name="SQL Server"
-        displayName="SQL Server Database"
-        description="Management agent to query and monitor SQL Server"
-        package="org.rhq.plugins.sqlserver"
-        pluginLifecycleListener="MSSQLPluginLifecycleListener"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="urn:xmlns:rhq-plugin"
-        xmlns:c="urn:xmlns:rhq-configuration">
+<plugin name="SQL Server" displayName="SQL Server Database"
+	description="Management agent to query and monitor SQL Server" package="org.rhq.plugins.sqlserver"
+	pluginLifecycleListener="MSSQLPluginLifecycleListener" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="urn:xmlns:rhq-plugin" xmlns:c="urn:xmlns:rhq-configuration">
 
-    <depends plugin="Database" useClasses="true"/>
+	<depends plugin="Database" useClasses="true" />
 
-   <server name="Microsoft SQL Server" discovery="MSSQLDiscoveryComponent" class="MSSQLServerComponent"
-           supportsManualAdd="true" description="SQL Server">
-           
-      <plugin-configuration>
-         <c:simple-property name="host" default="127.0.0.1" displayName="listen host" description="the hostname or IP address that the database is listening on"/>
-         <c:simple-property name="port" default="1433" displayName="listen port" description="the TCP port that the database is listening on">
-            <c:constraint>
-               <c:integer-constraint minimum="1" maximum="65535"/>
-            </c:constraint>
-         </c:simple-property>
-         <c:simple-property name="db" default="master" displayName="database name" description="the name of the database to connect to"/>
+	<server name="Microsoft SQL Server" discovery="MSSQLDiscoveryComponent"
+		class="MSSQLServerComponent" supportsManualAdd="true" description="SQL Server">
 
-         <c:simple-property name="driverClass" default="com.microsoft.sqlserver.jdbc.SQLServerDriver" displayName="JDBC driver class"
-                          description="the fully-qualified classname of the JDBC driver class" required="false"/>
-         <c:simple-property name="principal" default="sa" displayName="role name" description="the database role to connect as"/>
-         <c:simple-property name="credentials" default="sa" type="password" displayName="role password"
-                          description="the password for the database role being used to connect"/>
-      </plugin-configuration>
-	  <process-scan name="windows" query="process|basename|match=^sqlservr.*" />
+		<plugin-configuration>
+			<c:simple-property name="instanceName" default="MSSQLSERVER"
+				displayName="instance name" description="Optional instance name"
+				required="false" />
+			<c:simple-property name="host" default="127.0.0.1"
+				displayName="listen host"
+				description="the hostname or IP address that the database is listening on" />
+			<c:simple-property name="port" default="1433"
+				displayName="listen port" description="the TCP port that the database is listening on">
+				<c:constraint>
+					<c:integer-constraint minimum="1" maximum="65535" />
+				</c:constraint>
+			</c:simple-property>
+			<c:simple-property name="db" default="master"
+				displayName="database name" description="the name of the database to connect to" />
 
-      <service name="Database" class="MSSQLDatabaseComponent" discovery="MSSQLDatabaseDiscoveryComponent">
-         <plugin-configuration>
-            <c:simple-property name="databaseName" displayName="Database Name" readOnly="true" />
-         </plugin-configuration>
+			<c:simple-property name="driverClass"
+				default="com.microsoft.sqlserver.jdbc.SQLServerDriver" displayName="JDBC driver class"
+				description="the fully-qualified classname of the JDBC driver class"
+				required="false" />
+			<c:simple-property name="principal" default="sa"
+				displayName="role name" description="the database role to connect as" />
+			<c:simple-property name="credentials" default="sa"
+				type="password" displayName="role password"
+				description="the password for the database role being used to connect" />
+		</plugin-configuration>
+		<process-scan name="windows" query="process|basename|match=^sqlservr.*" />
 
-         <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
-                  description="Database table">
+		<service name="Database" class="MSSQLDatabaseComponent"
+			discovery="MSSQLDatabaseDiscoveryComponent">
+			<plugin-configuration>
+				<c:simple-property name="databaseName"
+					displayName="Database Name" readOnly="true" />
+			</plugin-configuration>
 
-            <plugin-configuration>
-               <c:simple-property name="tableName" readOnly="true" />
-            </plugin-configuration>
-         </service>
+			<service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
+				description="Database table">
 
-          <service name="Query"
-                   class="org.rhq.plugins.database.CustomTableComponent"
-                   discovery="org.rhq.plugins.database.CustomTableDiscoveryComponent"
-                   supportsManualAdd="true">
+				<plugin-configuration>
+					<c:simple-property name="tableName" readOnly="true" />
+				</plugin-configuration>
 
-              <plugin-configuration>
-                  <c:simple-property name="table" description="The table to discover and to be queried on for metric data"/>
-                  <c:simple-property name="name" required="false" description="Initial name of the resource when manually added. This is also part of the resource key - make this unique if you want two Query resources based on the same table."/>
-                  <c:simple-property name="description" required="false" description="Initial description of resource when manually added"/>
-                  <c:simple-property name="metricQuery" required="false" description="The query that will gather metric data. This must return two columns, a string column whose value is 'metricColumn' and then a numeric column whose value is the metric to be collected."/>
-              </plugin-configuration>
+				<metric displayName="Reserved Size" property="reserved"
+					measurementType="dynamic" displayType="summary" units="bytes"
+					description="The reserved amount of data in KB" />
+				<metric displayName="Data Size" property="data"
+					measurementType="dynamic" displayType="summary" units="bytes"
+					description="The amount of data currently stored in KB" />
+				<metric displayName="Index Size" property="data"
+					measurementType="dynamic" displayType="summary" units="bytes"
+					description="The amount of data spent in indexes in KB" />
+				<metric displayName="Unused" property="data" measurementType="dynamic"
+					displayType="summary" units="bytes"
+					description="The amount of unused, but reserved space in KB" />
+				<metric displayName="Rows" property="rows" measurementType="dynamic"
+					defaultOn="false" description="The estimated count of rows in the table." />
+			</service>
 
-              <metric property="metricColumn" displayName="Metric Value" displayType="summary" description="The metric value for this Query. If Metric Query is not specified, this is not collected."/>
+			<service name="Query" class="org.rhq.plugins.database.CustomTableComponent"
+				discovery="org.rhq.plugins.database.CustomTableDiscoveryComponent"
+				supportsManualAdd="true">
 
-          </service>
-      </service>
-           
-   </server>
+				<plugin-configuration>
+					<c:simple-property name="table"
+						description="The table to discover and to be queried on for metric data" />
+					<c:simple-property name="name" required="false"
+						description="Initial name of the resource when manually added. This is also part of the resource key - make this unique if you want two Query resources based on the same table." />
+					<c:simple-property name="description" required="false"
+						description="Initial description of resource when manually added" />
+					<c:simple-property name="metricQuery" required="false"
+						description="The query that will gather metric data. This must return two columns, a string column whose value is 'metricColumn' and then a numeric column whose value is the metric to be collected." />
+				</plugin-configuration>
+
+				<metric property="metricColumn" displayName="Metric Value"
+					displayType="summary"
+					description="The metric value for this Query. If Metric Query is not specified, this is not collected." />
+
+			</service>
+		</service>
+
+	</server>
 
 </plugin>

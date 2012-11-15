@@ -33,6 +33,7 @@ public class MSSQLTableDiscoveryComponent implements ResourceDiscoveryComponent<
 			PreparedStatement statement = null;
 			ResultSet resultSet = null;
 			try {
+				conn.setCatalog(dbName);
 				statement = conn.prepareStatement(TABLE_NAME_QUERY);
 				resultSet = statement.executeQuery();
 				

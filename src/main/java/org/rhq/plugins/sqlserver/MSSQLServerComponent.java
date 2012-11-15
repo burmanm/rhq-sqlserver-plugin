@@ -101,10 +101,14 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
 
         String principal = configuration.getSimple("principal").getStringValue();
         String credentials = configuration.getSimple("credentials").getStringValue();
+        String instance = configuration.getSimple("instanceName").getStringValue();
 
         Properties props = new Properties();
         props.put("user", principal);
         props.put("password", credentials);
+        if(instance != null && !instance.equals("MSSQLSERVER")) {
+        	props.put("instanceName", instance);
+        }
 
         return DriverManager.getConnection(url, props);
     }

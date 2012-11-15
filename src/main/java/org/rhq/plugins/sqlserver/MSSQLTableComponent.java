@@ -1,9 +1,12 @@
 package org.rhq.plugins.sqlserver;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Set;
 
 import org.rhq.core.domain.measurement.AvailabilityType;
+import org.rhq.core.domain.measurement.MeasurementDataNumeric;
 import org.rhq.core.domain.measurement.MeasurementReport;
 import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
@@ -13,6 +16,7 @@ import org.rhq.plugins.database.DatabaseComponent;
 public class MSSQLTableComponent implements DatabaseComponent<MSSQLDatabaseComponent<?>>, MeasurementFacet {
 
     private ResourceContext<MSSQLDatabaseComponent<?>> resourceContext;
+    private static final String TABLE_STATISTICS_QUERY = "EXEC sp_spaceused ?";
 
 	@Override
 	public void start(ResourceContext<MSSQLDatabaseComponent<?>> resourceContext) {
@@ -33,7 +37,21 @@ public class MSSQLTableComponent implements DatabaseComponent<MSSQLDatabaseCompo
 
 	@Override
 	public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) throws Exception {
-		// TODO Auto-generated method stub
+		Connection conn = getConnection();
+		PreparedStatement ps = conn.prepareStatement(TABLE_STATISTICS_QUERY);
+		ps.setString(1, getTableName());
+		ResultSet rs = ps.executeQuery();
+		if(rs.next()) {
+	        for (MeasurementScheduleRequest metric : metrics) {
+	        	String value = rs.getString(metric.getName());
+	        	if(value != null) {
+	        		value = value.replaceAll("KB", "").replaceAll("MB", "").trim(); // remove KB/MB definitions
+	        		Double dValue = new Double(value);
+	                MeasurementDataNumeric mdn = new MeasurementDataNumeric(metric, dValue);
+	                report.addData(mdn);	        		
+	        	}
+	        }
+		}
 		
 	}
 	

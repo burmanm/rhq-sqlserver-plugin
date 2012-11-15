@@ -16,6 +16,7 @@ package org.rhq.plugins.sqlserver;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +38,8 @@ public class MSSQLDiscoveryComponent implements ResourceDiscoveryComponent, Manu
 
 	private static final Log log = LogFactory.getLog(MSSQLDiscoveryComponent.class);
 
+	private static final String INSTANCE_NAME_QUERY = "SELECT @@SERVERNAME";
+	
 	public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext resourceDiscoveryContext)
 			throws InvalidPluginConfigurationException, Exception {
 		Set<DiscoveredResourceDetails> found = new HashSet<DiscoveredResourceDetails>();
@@ -62,10 +65,16 @@ public class MSSQLDiscoveryComponent implements ResourceDiscoveryComponent, Manu
 
 		Connection connection = null;
 		String version = null;
+		String instanceName = null;
 		try {
 			connection = MSSQLServerComponent.buildConnection(pluginConfig);
 			DatabaseMetaData dbmd = connection.getMetaData();
-			version = dbmd.getDatabaseMajorVersion() + "." + dbmd.getDatabaseMinorVersion();
+			version = dbmd.getDatabaseProductVersion();
+			ResultSet rs = connection.createStatement().executeQuery(INSTANCE_NAME_QUERY);
+			if(rs.next()) {
+				instanceName = rs.getString(1);
+			}
+			rs.close();
 		} catch (Exception e) {
 			log.warn("Could not connect to SQL Server with supplied configuration", e);
 //			throw new InvalidPluginConfigurationException("Unable to connect to SQL Server", e);
@@ -74,6 +83,7 @@ public class MSSQLDiscoveryComponent implements ResourceDiscoveryComponent, Manu
 		}
 
 		DiscoveredResourceDetails details = createResourceDetails(resourceDiscoveryContext, pluginConfig, version, null);
+		details.setResourceName(instanceName);
 		return details;
 	
 	}
@@ -82,7 +92,7 @@ public class MSSQLDiscoveryComponent implements ResourceDiscoveryComponent, Manu
 			Configuration pluginConfig, String version, @Nullable ProcessInfo processInfo) {
 		String description = "SQL Server " + version;
 		String key = "sqlserver";
-		String value = "2008R2";
+		String value = "MSSQLSERVER";
 		return new DiscoveredResourceDetails(discoveryContext.getResourceType(), key, value, version, description, pluginConfig,
 				processInfo);
 	}
