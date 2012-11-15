@@ -1,10 +1,16 @@
 package org.rhq.plugins.sqlserver;
 
-import org.rhq.core.pluginapi.inventory.ResourceContext;
-import org.rhq.core.domain.measurement.AvailabilityType;
-import org.rhq.plugins.database.CustomTableComponent;
+import java.sql.Connection;
+import java.util.Set;
 
-public class MSSQLTableComponent extends CustomTableComponent {
+import org.rhq.core.domain.measurement.AvailabilityType;
+import org.rhq.core.domain.measurement.MeasurementReport;
+import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.rhq.core.pluginapi.inventory.ResourceContext;
+import org.rhq.core.pluginapi.measurement.MeasurementFacet;
+import org.rhq.plugins.database.DatabaseComponent;
+
+public class MSSQLTableComponent implements DatabaseComponent<MSSQLDatabaseComponent<?>>, MeasurementFacet {
 
     private ResourceContext<MSSQLDatabaseComponent<?>> resourceContext;
 
@@ -21,5 +27,25 @@ public class MSSQLTableComponent extends CustomTableComponent {
 	public AvailabilityType getAvailability() {
 		return AvailabilityType.UP;
 	}
+
+	@Override
+	public void stop() { }
+
+	@Override
+	public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+    public Connection getConnection() {
+        return this.resourceContext.getParentResourceComponent().getConnection();
+    }
+
+	@Override
+    public void removeConnection() {
+        this.resourceContext.getParentResourceComponent().removeConnection();
+    }
+	
 
 }
