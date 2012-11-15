@@ -58,10 +58,10 @@
 				<metric displayName="Data Size" property="data"
 					measurementType="dynamic" displayType="summary" units="bytes"
 					description="The amount of data currently stored in KB" />
-				<metric displayName="Index Size" property="data"
+				<metric displayName="Index Size" property="index_size"
 					measurementType="dynamic" displayType="summary" units="bytes"
 					description="The amount of data spent in indexes in KB" />
-				<metric displayName="Unused" property="data" measurementType="dynamic"
+				<metric displayName="Unused" property="unused" measurementType="dynamic"
 					displayType="summary" units="bytes"
 					description="The amount of unused, but reserved space in KB" />
 				<metric displayName="Rows" property="rows" measurementType="dynamic"
