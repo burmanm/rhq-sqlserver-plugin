@@ -42,7 +42,7 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
 
     private boolean started;
 
-    public void start(ResourceContext resourceContext) throws InvalidPluginConfigurationException, Exception {
+    public void start(ResourceContext resourceContext) throws InvalidPluginConfigurationException, SQLException {
         this.resourceContext = resourceContext;
         this.connection = buildConnection(resourceContext.getPluginConfiguration());
         this.started = true;
@@ -68,7 +68,7 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
      * @see org.rhq.core.pluginapi.measurement.MeasurementFacet#getValues(org.rhq.core.domain.measurement.MeasurementReport, java.util.Set)
      */
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) {
-    	
+        // Which values are we interested in?
     }
 
     public Connection getConnection() {
@@ -76,8 +76,9 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
             if (this.connection == null || connection.isClosed()) {
                 this.connection = buildConnection(this.resourceContext.getPluginConfiguration());
             }
+            this.connection.setCatalog("master"); // Default for server component requests
         } catch (SQLException e) {
-            LOG.info("Unable to create oracle connection", e);
+            LOG.info("Unable to create SQL Server connection", e);
         }
         return this.connection;
     }
@@ -109,6 +110,8 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
         if(instance != null && !instance.equals("MSSQLSERVER")) {
         	props.put("instanceName", instance);
         }
+
+        LOG.info("Trying to connect with " + props.get("user") + ";" + props.get("password"));
 
         return DriverManager.getConnection(url, props);
     }

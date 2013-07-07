@@ -45,7 +45,17 @@
 					displayName="Database Name" readOnly="true" />
 			</plugin-configuration>
 
-			<service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
+            <!--//    name	create_date	compatibility_level	collation_name	state_desc	recovery_model_desc	size-->
+            <!--//    AdventureWorks2012	2013-06-26 22:14:50.260	110	SQL_Latin1_General_CP1_CI_AS	ONLINE	FULL	210688-->
+
+            <metric displayName="Create time" property="create_date" dataType="trait" displayType="summary" description="Creation time of the database" />
+            <metric displayName="Compatibility level" property="compatibility_level" dataType="trait" displayType="summary" description="Compatibility level of the database" />
+            <metric displayName="Collation name" property="collation_name" dataType="trait" displayType="summary" description="Collation" />
+            <metric displayName="State" property="state_desc" dataType="trait" displayType="summary" description="State of the database" />
+            <metric displayName="Recovery model" property="recovery_model_desc" dataType="trait" displayType="summary" description="Recovery model" />
+            <metric displayName="Database size" property="size" measurementType="dynamic" units="bytes" displayType="summary" description="Size of the database in KB" />
+
+            <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
 				description="Database table">
 
 				<plugin-configuration>

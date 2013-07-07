@@ -41,14 +41,16 @@ public class MSSQLDiscoveryComponent implements ResourceDiscoveryComponent, Manu
 	private static final String INSTANCE_NAME_QUERY = "SELECT @@SERVERNAME";
 	
 	public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext resourceDiscoveryContext)
-			throws InvalidPluginConfigurationException, Exception {
+			throws InvalidPluginConfigurationException {
 		Set<DiscoveredResourceDetails> found = new HashSet<DiscoveredResourceDetails>();
 		List<ProcessScanResult> autoDiscoveryResults = resourceDiscoveryContext.getAutoDiscoveredProcesses();
 		for (ProcessScanResult process : autoDiscoveryResults) {
 
-			String pwd = process.getProcessInfo().getExecutable().getCwd();
+            ProcessInfo info = process.getProcessInfo();
 
-			String version = pwd;
+			String pwd = process.getProcessInfo().getExecutable().getCwd(); // Fix this
+
+			String version = pwd; // And this
 
 			Configuration pluginConfig = resourceDiscoveryContext.getDefaultPluginConfiguration().deepCopy();
 			

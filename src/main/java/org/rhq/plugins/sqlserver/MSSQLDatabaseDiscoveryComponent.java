@@ -1,6 +1,7 @@
 package org.rhq.plugins.sqlserver;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +17,7 @@ public class MSSQLDatabaseDiscoveryComponent implements ResourceDiscoveryCompone
 
 	@Override
 	public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext<MSSQLServerComponent<?>> context)
-			throws InvalidPluginConfigurationException, Exception {
+			throws InvalidPluginConfigurationException, SQLException {
         Set<DiscoveredResourceDetails> databases = new HashSet<DiscoveredResourceDetails>();
 
         Statement statement = null;
@@ -24,9 +25,9 @@ public class MSSQLDatabaseDiscoveryComponent implements ResourceDiscoveryCompone
         try {
             statement = context.getParentResourceComponent().getConnection().createStatement();
             resultSet = statement
-                .executeQuery("EXEC sp_databases");
+                .executeQuery("SELECT name FROM sys.databases");
             while (resultSet.next()) {
-                String databaseName = resultSet.getString("DATABASE_NAME");
+                String databaseName = resultSet.getString("name");
                 DiscoveredResourceDetails database = new DiscoveredResourceDetails(context.getResourceType(),
                     databaseName, databaseName, null, "The " + databaseName + " database", null, null);
                 database.getPluginConfiguration().put(new PropertySimple("databaseName", databaseName));

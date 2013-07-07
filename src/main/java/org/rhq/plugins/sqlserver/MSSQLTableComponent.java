@@ -52,7 +52,6 @@ public class MSSQLTableComponent implements DatabaseComponent<MSSQLDatabaseCompo
 	        	}
 	        }
 		}
-		
 	}
 	
 	@Override
