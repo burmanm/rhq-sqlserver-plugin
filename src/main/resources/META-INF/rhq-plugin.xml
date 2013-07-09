@@ -38,15 +38,18 @@
 		</plugin-configuration>
 		<process-scan name="windows" query="process|basename|match=^sqlservr.*" />
 
+        <metric displayName="Version" property="productversion" dataType="trait" displayType="summary" description="SQL Server version info" />
+        <metric displayName="Level" property="productlevel" dataType="trait" displayType="summary" description="SQL Server product level info" />
+        <metric displayName="Edition" property="edition" dataType="trait" displayType="summary" description="SQL Server edition info" />
+        <metric displayName="Max memory" property="max-memory" dataType="trait" displayType="summary" description="SQL Server max allowed memory configuration" />
+        <metric displayName="XACT-resolution" property="xact-resolution" dataType="trait" displayType="summary" description="In-doubt XACT resolution configuration" />
+
 		<service name="Database" class="MSSQLDatabaseComponent"
 			discovery="MSSQLDatabaseDiscoveryComponent">
 			<plugin-configuration>
 				<c:simple-property name="databaseName"
 					displayName="Database Name" readOnly="true" />
 			</plugin-configuration>
-
-            <!--//    name	create_date	compatibility_level	collation_name	state_desc	recovery_model_desc	size-->
-            <!--//    AdventureWorks2012	2013-06-26 22:14:50.260	110	SQL_Latin1_General_CP1_CI_AS	ONLINE	FULL	210688-->
 
             <metric displayName="Create time" property="create_date" dataType="trait" displayType="summary" description="Creation time of the database" />
             <metric displayName="Compatibility level" property="compatibility_level" dataType="trait" displayType="summary" description="Compatibility level of the database" />

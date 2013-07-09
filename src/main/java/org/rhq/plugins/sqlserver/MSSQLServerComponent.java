@@ -14,24 +14,23 @@
  */
 package org.rhq.plugins.sqlserver;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.rhq.core.domain.configuration.Configuration;
-import org.rhq.core.domain.measurement.AvailabilityType;
-import org.rhq.core.domain.measurement.MeasurementReport;
-import org.rhq.core.domain.measurement.MeasurementScheduleRequest;
+import org.rhq.core.domain.measurement.*;
 import org.rhq.core.pluginapi.inventory.InvalidPluginConfigurationException;
 import org.rhq.core.pluginapi.inventory.ResourceComponent;
 import org.rhq.core.pluginapi.inventory.ResourceContext;
 import org.rhq.core.pluginapi.measurement.MeasurementFacet;
 import org.rhq.core.util.jdbc.JDBCUtil;
 import org.rhq.plugins.database.DatabaseComponent;
+import org.rhq.plugins.database.DatabaseQueryUtility;
 
 public class MSSQLServerComponent<T extends ResourceComponent<?>> implements DatabaseComponent<T>, MeasurementFacet {
     private static final Log LOG = LogFactory.getLog(MSSQLServerComponent.class);
@@ -39,6 +38,10 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
     private Connection connection;
 
     private ResourceContext resourceContext;
+
+    private static final String PROPERTY_QUERY = "SELECT CONVERT(varchar(100), SERVERPROPERTY('productversion')) AS productversion, CONVERT(varchar(100), SERVERPROPERTY('productlevel')) AS productlevel, CONVERT(varchar(100), SERVERPROPERTY('edition')) AS edition";
+    private static final String CONFIG_QUERY = "SELECT configuration_id, CONVERT(varchar(100), value) AS value FROM sys.configurations WHERE configuration_id IN ('1544', '1570')";
+
 
     private boolean started;
 
@@ -69,6 +72,54 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
      */
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) {
         // Which values are we interested in?
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        Map<String, String> queryResults = new HashMap<String, String>();
+
+        try {
+            Connection conn = getConnection();
+            statement = conn.prepareStatement(PROPERTY_QUERY);
+            resultSet = statement.executeQuery();
+
+            if (!resultSet.next()) {
+                throw new RuntimeException("Couldn't get the data"); // What should we do in this case? Hopefully it's down..
+            } else {
+                queryResults.put("productversion", resultSet.getString("productversion"));
+                queryResults.put("productlevel", resultSet.getString("productlevel"));
+                queryResults.put("edition", resultSet.getString("edition"));
+            }
+            DatabaseQueryUtility.close(statement, resultSet);
+
+            statement = conn.prepareStatement(CONFIG_QUERY);
+            resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                long id = resultSet.getLong("configuration_id");
+                String value = resultSet.getString("value");
+
+                if(id == 1544) {
+                    queryResults.put("max-memory", value);
+                } else if(id == 1570) {
+                    queryResults.put("xact-resolution", value);
+                }
+            }
+            DatabaseQueryUtility.close(statement, resultSet);
+
+            for (MeasurementScheduleRequest request : metrics) {
+
+                String property = request.getName();
+                report.addData(new MeasurementDataTrait(request, queryResults.get(property)));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (SQLException e) {
+            }
+        }
     }
 
     public Connection getConnection() {
@@ -110,8 +161,6 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
         if(instance != null && !instance.equals("MSSQLSERVER")) {
         	props.put("instanceName", instance);
         }
-
-        LOG.info("Trying to connect with " + props.get("user") + ";" + props.get("password"));
 
         return DriverManager.getConnection(url, props);
     }
