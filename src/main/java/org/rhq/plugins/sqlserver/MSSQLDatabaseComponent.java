@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
@@ -27,9 +29,10 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 	private static String AVAILABLE_STATUS = "ONLINE";
 
     private static String STATUS_QUERY = "SELECT state_desc FROM sys.databases WHERE name = ?";
-    private static String VALUES_QUERY = "SELECT d.create_date, d.compatibility_level, d.collation_name, d.state_desc, d.recovery_model_desc, (SELECT SUM(m.size) * 8 FROM sys.master_files AS m WHERE m.database_id = d.database_id) AS size FROM sys.databases AS d WHERE d.name = ?";
+    private static String TRAIT_QUERY = "SELECT d.create_date, d.compatibility_level, d.collation_name, d.state_desc, d.recovery_model_desc FROM sys.databases AS d WHERE d.name = ?";
+    private static String METRIC_QUERY = "SELECT SUM(m.size) * 8 AS size FROM sys.master_files AS m INNER JOIN sys.databases AS d ON m.database_id = d.database_id WHERE d.name = ?";
 
-	@Override
+    @Override
 	public void start(ResourceContext<MSSQLServerComponent<?>> context) throws InvalidPluginConfigurationException {
 		serverComponent = context.getParentResourceComponent();
 		databaseName = context.getResourceKey();
@@ -72,52 +75,38 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 
     // http://msdn.microsoft.com/en-us/library/ms190326.aspx (get datafile info)
 
-
 //    name	create_date	compatibility_level	collation_name	state_desc	recovery_model_desc	size
 //    AdventureWorks2012	2013-06-26 22:14:50.260	110	SQL_Latin1_General_CP1_CI_AS	ONLINE	FULL	210688
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) {
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
+
+        Map<String, Double> numericResults = null;
+        Map<String, Object> traitResults = null;
 
         try {
-            Connection conn = getConnection();
-            statement = conn.prepareStatement(VALUES_QUERY);
-            statement.setString(1, databaseName);
-            resultSet = statement.executeQuery();
+            for (MeasurementScheduleRequest request : metrics) {
 
-            try {
-                if (!resultSet.next()) {
-                    throw new RuntimeException("Couldn't get the data"); // What should we do in this case? Hopefully it's down..
+                String property = request.getName();
+
+                switch(request.getDataType()) {
+                    case TRAIT:
+                        if(traitResults == null) {
+                            traitResults = DatabaseQueryUtility.getGridValues(this, TRAIT_QUERY).get(0);
+                        }
+                        report.addData(new MeasurementDataTrait(request, (String) traitResults.get(property)));
+                        break;
+                    case MEASUREMENT:
+                        if(numericResults == null) {
+                            numericResults = DatabaseQueryUtility.getNumericQueryValues(this, METRIC_QUERY);
+                        }
+                        report.addData(new MeasurementDataNumeric(request, numericResults.get(property)));
+                        break;
+                    default:
+                        // Not supported here
+                        break;
                 }
-
-                for (MeasurementScheduleRequest request : metrics) {
-
-                    String property = request.getName();
-
-                    switch(request.getDataType()) {
-                        case TRAIT:
-                            report.addData(new MeasurementDataTrait(request, resultSet.getString(property)));
-                            break;
-                        case MEASUREMENT:
-                            report.addData(new MeasurementDataNumeric(request, resultSet.getDouble(property)));
-                            break;
-                        default:
-                            // Not supported here
-                            break;
-                    }
-                }
-            } finally {
-                DatabaseQueryUtility.close(statement, resultSet);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-            }
         }
     }
 
