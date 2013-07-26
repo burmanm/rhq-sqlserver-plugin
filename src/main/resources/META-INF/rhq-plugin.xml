@@ -41,8 +41,75 @@
         <metric displayName="Version" property="productversion" dataType="trait" displayType="summary" description="SQL Server version info" />
         <metric displayName="Level" property="productlevel" dataType="trait" displayType="summary" description="SQL Server product level info" />
         <metric displayName="Edition" property="edition" dataType="trait" displayType="summary" description="SQL Server edition info" />
-        <metric displayName="Max memory" property="max-memory" dataType="trait" displayType="summary" description="SQL Server max allowed memory configuration" />
-        <metric displayName="XACT-resolution" property="xact-resolution" dataType="trait" displayType="summary" description="In-doubt XACT resolution configuration" />
+        <metric displayName="recovery interval (min)" property="config_id_101" dataType="trait" displayType="summary" description="Maximum recovery interval in minutes">
+        <metric displayName="allow updates" property="config_id_102" dataType="trait" displayType="summary" description="Allow updates to system tables">
+        <metric displayName="user connections" property="config_id_103" dataType="trait" displayType="summary" description="Number of user connections allowed">
+        <metric displayName="locks" property="config_id_106" dataType="trait" displayType="summary" description="Number of locks for all users">
+        <metric displayName="open objects" property="config_id_107" dataType="trait" displayType="summary" description="Number of open database objects">
+        <metric displayName="fill factor (%)" property="config_id_109" dataType="trait" displayType="summary" description="Default fill factor percentage">
+        <metric displayName="disallow results from triggers" property="config_id_114" dataType="trait" displayType="summary" description="Disallow returning results from triggers">
+        <metric displayName="nested triggers" property="config_id_115" dataType="trait" displayType="summary" description="Allow triggers to be invoked within triggers">
+        <metric displayName="server trigger recursion" property="config_id_116" dataType="trait" displayType="summary" description="Allow recursion for server level triggers">
+        <metric displayName="remote access" property="config_id_117" dataType="trait" displayType="summary" description="Allow remote access">
+        <metric displayName="default language" property="config_id_124" dataType="trait" displayType="summary" description="default language">
+        <metric displayName="cross db ownership chaining" property="config_id_400" dataType="trait" displayType="summary" description="Allow cross db ownership chaining">
+        <metric displayName="max worker threads" property="config_id_503" dataType="trait" displayType="summary" description="Maximum worker threads">
+        <metric displayName="network packet size (B)" property="config_id_505" dataType="trait" displayType="summary" description="Network packet size">
+        <metric displayName="show advanced options" property="config_id_518" dataType="trait" displayType="summary" description="show advanced options">
+        <metric displayName="remote proc trans" property="config_id_542" dataType="trait" displayType="summary" description="Create DTC transaction for remote procedures">
+        <metric displayName="c2 audit mode" property="config_id_544" dataType="trait" displayType="summary" description="c2 audit mode">
+        <metric displayName="default full-text language" property="config_id_1126" dataType="trait" displayType="summary" description="default full-text language">
+        <metric displayName="two digit year cutoff" property="config_id_1127" dataType="trait" displayType="summary" description="two digit year cutoff">
+        <metric displayName="index create memory (KB)" property="config_id_1505" dataType="trait" displayType="summary" description="Memory for index create sorts (kBytes)">
+        <metric displayName="priority boost" property="config_id_1517" dataType="trait" displayType="summary" description="Priority boost">
+        <metric displayName="remote login timeout (s)" property="config_id_1519" dataType="trait" displayType="summary" description="remote login timeout">
+        <metric displayName="remote query timeout (s)" property="config_id_1520" dataType="trait" displayType="summary" description="remote query timeout">
+        <metric displayName="cursor threshold" property="config_id_1531" dataType="trait" displayType="summary" description="cursor threshold">
+        <metric displayName="set working set size" property="config_id_1532" dataType="trait" displayType="summary" description="set working set size">
+        <metric displayName="user options" property="config_id_1534" dataType="trait" displayType="summary" description="user options">
+        <metric displayName="affinity mask" property="config_id_1535" dataType="trait" displayType="summary" description="affinity mask">
+        <metric displayName="max text repl size (B)" property="config_id_1536" dataType="trait" displayType="summary" description="Maximum size of a text field in replication.">
+        <metric displayName="media retention" property="config_id_1537" dataType="trait" displayType="summary" description="Tape retention period in days">
+        <metric displayName="cost threshold for parallelism" property="config_id_1538" dataType="trait" displayType="summary" description="cost threshold for parallelism">
+        <metric displayName="max degree of parallelism" property="config_id_1539" dataType="trait" displayType="summary" description="maximum degree of parallelism">
+        <metric displayName="min memory per query (KB)" property="config_id_1540" dataType="trait" displayType="summary" description="minimum memory per query (kBytes)">
+        <metric displayName="query wait (s)" property="config_id_1541" dataType="trait" displayType="summary" description="maximum time to wait for query memory (s)">
+        <metric displayName="min server memory (MB)" property="config_id_1543" dataType="trait" displayType="summary" description="Minimum size of server memory (MB)">
+        <metric displayName="max server memory (MB)" property="config_id_1544" dataType="trait" displayType="summary" description="Maximum size of server memory (MB)">
+        <metric displayName="query governor cost limit" property="config_id_1545" dataType="trait" displayType="summary" description="Maximum estimated cost allowed by query governor">
+        <metric displayName="lightweight pooling" property="config_id_1546" dataType="trait" displayType="summary" description="User mode scheduler uses lightweight pooling">
+        <metric displayName="scan for startup procs" property="config_id_1547" dataType="trait" displayType="summary" description="scan for startup stored procedures">
+        <metric displayName="affinity64 mask" property="config_id_1549" dataType="trait" displayType="summary" description="affinity64 mask">
+        <metric displayName="affinity I/O mask" property="config_id_1550" dataType="trait" displayType="summary" description="affinity I/O mask">
+        <metric displayName="affinity64 I/O mask" property="config_id_1551" dataType="trait" displayType="summary" description="affinity64 I/O mask">
+        <metric displayName="transform noise words" property="config_id_1555" dataType="trait" displayType="summary" description="Transform noise words for full-text query">
+        <metric displayName="precompute rank" property="config_id_1556" dataType="trait" displayType="summary" description="Use precomputed rank for full-text query">
+        <metric displayName="PH timeout (s)" property="config_id_1557" dataType="trait" displayType="summary" description="DB connection timeout for full-text protocol handler (s)">
+        <metric displayName="clr enabled" property="config_id_1562" dataType="trait" displayType="summary" description="CLR user code execution enabled in the server">
+        <metric displayName="max full-text crawl range" property="config_id_1563" dataType="trait" displayType="summary" description="Maximum  crawl ranges allowed in full-text indexing">
+        <metric displayName="ft notify bandwidth (min)" property="config_id_1564" dataType="trait" displayType="summary" description="Number of reserved full-text notifications buffers">
+        <metric displayName="ft notify bandwidth (max)" property="config_id_1565" dataType="trait" displayType="summary" description="Max number of full-text notifications buffers">
+        <metric displayName="ft crawl bandwidth (min)" property="config_id_1566" dataType="trait" displayType="summary" description="Number of reserved full-text crawl buffers">
+        <metric displayName="ft crawl bandwidth (max)" property="config_id_1567" dataType="trait" displayType="summary" description="Max number of full-text crawl buffers">
+        <metric displayName="default trace enabled" property="config_id_1568" dataType="trait" displayType="summary" description="Enable or disable the default trace">
+        <metric displayName="blocked process threshold (s)" property="config_id_1569" dataType="trait" displayType="summary" description="Blocked process reporting threshold">
+        <metric displayName="in-doubt xact resolution" property="config_id_1570" dataType="trait" displayType="summary" description="Recovery policy for DTC transactions with unknown outcome">
+        <metric displayName="remote admin connections" property="config_id_1576" dataType="trait" displayType="summary" description="Dedicated Admin Connections are allowed from remote clients">
+        <metric displayName="common criteria compliance enabled" property="config_id_1577" dataType="trait" displayType="summary" description="Common Criteria compliance mode enabled">
+        <metric displayName="EKM provider enabled" property="config_id_1578" dataType="trait" displayType="summary" description="Enable or disable EKM provider">
+        <metric displayName="backup compression default" property="config_id_1579" dataType="trait" displayType="summary" description="Enable compression of backups by default">
+        <metric displayName="filestream access level" property="config_id_1580" dataType="trait" displayType="summary" description="Sets the FILESTREAM access level">
+        <metric displayName="optimize for ad hoc workloads" property="config_id_1581" dataType="trait" displayType="summary" description="When this option is set, plan cache size is further reduced for single-use adhoc OLTP workload.">
+        <metric displayName="access check cache bucket count" property="config_id_1582" dataType="trait" displayType="summary" description="Default hash bucket count for the access check result security cache">
+        <metric displayName="access check cache quota" property="config_id_1583" dataType="trait" displayType="summary" description="Default quota for the access check result security cache">
+        <metric displayName="Agent XPs" property="config_id_16384" dataType="trait" displayType="summary" description="Enable or disable Agent XPs">
+        <metric displayName="Database Mail XPs" property="config_id_16386" dataType="trait" displayType="summary" description="Enable or disable Database Mail XPs">
+        <metric displayName="SMO and DMO XPs" property="config_id_16387" dataType="trait" displayType="summary" description="Enable or disable SMO and DMO XPs">
+        <metric displayName="Ole Automation Procedures" property="config_id_16388" dataType="trait" displayType="summary" description="Enable or disable Ole Automation Procedures">
+        <metric displayName="xp_cmdshell" property="config_id_16390" dataType="trait" displayType="summary" description="Enable or disable command shell">
+        <metric displayName="Ad Hoc Distributed Queries" property="config_id_16391" dataType="trait" displayType="summary" description="Enable or disable Ad Hoc Distributed Queries">
+        <metric displayName="Replication XPs" property="config_id_16392" dataType="trait" displayType="summary" description="Enable or disable Replication XPs">
+        <metric displayName="contained database authentication" property="config_id_16393" dataType="trait" displayType="summary" description="Enables contained databases and contained authentication">
 
 		<service name="Database" class="MSSQLDatabaseComponent"
 			discovery="MSSQLDatabaseDiscoveryComponent">
@@ -57,6 +124,19 @@
             <metric displayName="State" property="state_desc" dataType="trait" displayType="summary" description="State of the database" />
             <metric displayName="Recovery model" property="recovery_model_desc" dataType="trait" displayType="summary" description="Recovery model" />
             <metric displayName="Database size" property="size" measurementType="dynamic" units="bytes" displayType="summary" description="Size of the database in KB" />
+
+            <service name="Datafile" class="MSSQLDataFileComponent" discovery="MSSQLDataFileDiscoveryComponent" description="Database files">
+                <plugin-configuration>
+                    <c:simple-property name="logicalName" readOnly="true" />
+                </plugin-configuration>
+
+                <metric displayName="Logical Name" property="logical_name" dataType="trait" displayType="summary" description="Logical name of the datafile" />
+                <metric displayName="File Type" property="file_type" dataType="trait" displayType="summary" description="Filetype of database file" />
+                <metric displayName="Filegroup" property="filegroup" dataType="trait" displayType="summary" description="Filegroup datafile belongs to" />
+                <metric displayName="Autogrowth" property="autogrowth_desc" dataType="trait" displayType="summary" description="Autogrowth settings" />
+                <metric displayName="Path" property="path" dataType="trait" displayType="summary" description="Directory the file resides in" />
+                <metric displayName="File Name" property="file_name" dataType="trait" displayType="summary" description="File name" />
+            </service>
 
             <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
 				description="Database table">
