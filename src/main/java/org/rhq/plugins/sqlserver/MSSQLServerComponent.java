@@ -15,10 +15,7 @@
 package org.rhq.plugins.sqlserver;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +37,7 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
     private ResourceContext resourceContext;
 
     private static final String PROPERTY_QUERY = "SELECT CONVERT(varchar(100), SERVERPROPERTY('productversion')) AS productversion, CONVERT(varchar(100), SERVERPROPERTY('productlevel')) AS productlevel, CONVERT(varchar(100), SERVERPROPERTY('edition')) AS edition";
-    private static final String CONFIG_QUERY = "SELECT configuration_id, CONVERT(varchar(100), value) AS value FROM sys.configurations WHERE configuration_id IN ('1544', '1570')";
+    private static final String CONFIG_QUERY = "SELECT configuration_id, CONVERT(varchar(100), value) AS value FROM sys.configurations";
 
 
     private boolean started;
@@ -64,47 +61,39 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
         }
     }
 
+    private Map<String, String> fillTraitData() throws SQLException {
+        Map<String, String> traitsMap = new HashMap<String, String>();
+
+        // This is form of configuration_id, value
+        List<Map<String,Object>> gridValues = DatabaseQueryUtility.getGridValues(this, CONFIG_QUERY);
+
+        // Now transform to String, String and add config_id to it
+        for(Map<String, Object> data : gridValues) {
+            for(Map.Entry<String, Object> entry : data.entrySet()) {
+                traitsMap.put("config_id_" + entry.getKey(), (String) entry.getValue());
+            }
+        }
+
+        // Rest, just transform to String, String
+        gridValues = DatabaseQueryUtility.getGridValues(this, PROPERTY_QUERY);
+
+        for(Map<String, Object> data : gridValues) {
+            for(Map.Entry<String, Object> entry : data.entrySet()) {
+                traitsMap.put(entry.getKey(), (String) entry.getValue());
+            }
+        }
+
+        return traitsMap;
+    }
+
     /*
-     * Implement later.
-     * 
      * (non-Javadoc)
      * @see org.rhq.core.pluginapi.measurement.MeasurementFacet#getValues(org.rhq.core.domain.measurement.MeasurementReport, java.util.Set)
      */
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) {
-        // Which values are we interested in?
-        PreparedStatement statement = null;
-        ResultSet resultSet = null;
-
-        Map<String, String> queryResults = new HashMap<String, String>();
-
+        Map<String, String> queryResults = null;
         try {
-            Connection conn = getConnection();
-            statement = conn.prepareStatement(PROPERTY_QUERY);
-            resultSet = statement.executeQuery();
-
-            if (!resultSet.next()) {
-                throw new RuntimeException("Couldn't get the data"); // What should we do in this case? Hopefully it's down..
-            } else {
-                queryResults.put("productversion", resultSet.getString("productversion"));
-                queryResults.put("productlevel", resultSet.getString("productlevel"));
-                queryResults.put("edition", resultSet.getString("edition"));
-            }
-            DatabaseQueryUtility.close(statement, resultSet);
-
-            statement = conn.prepareStatement(CONFIG_QUERY);
-            resultSet = statement.executeQuery();
-            while(resultSet.next()) {
-                long id = resultSet.getLong("configuration_id");
-                String value = resultSet.getString("value");
-
-                if(id == 1544) {
-                    queryResults.put("max-memory", value);
-                } else if(id == 1570) {
-                    queryResults.put("xact-resolution", value);
-                }
-            }
-            DatabaseQueryUtility.close(statement, resultSet);
-
+            queryResults = fillTraitData();
             for (MeasurementScheduleRequest request : metrics) {
 
                 String property = request.getName();
@@ -112,13 +101,6 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        } finally {
-            try {
-                if (statement != null) {
-                    statement.close();
-                }
-            } catch (SQLException e) {
-            }
         }
     }
 
