@@ -26,8 +26,11 @@ public class MSSQLTableDiscoveryComponent implements ResourceDiscoveryComponent<
 			throws InvalidPluginConfigurationException, Exception {
 		
 		String dbName = context.getParentResourceComponent().getDatabaseName();
-		Connection conn = context.getParentResourceComponent().getConnection();
 		Set<DiscoveredResourceDetails> discoveredTables = new HashSet<DiscoveredResourceDetails>();
+        if(dbName.equals("tempdb")) {
+            return discoveredTables; // For tempdb, we don't want to see them (they are too temporary)
+        }
+        Connection conn = context.getParentResourceComponent().getConnection();
 
 		if(conn != null) {
 			PreparedStatement statement = null;
