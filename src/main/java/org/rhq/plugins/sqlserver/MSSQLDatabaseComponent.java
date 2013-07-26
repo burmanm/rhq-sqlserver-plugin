@@ -120,7 +120,7 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
         try {
             conn.setCatalog(getDatabaseName());
         } catch (SQLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new RuntimeException(e);
         }
         return conn;
     }
