@@ -37,7 +37,7 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
     private ResourceContext resourceContext;
 
     private static final String PROPERTY_QUERY = "SELECT CONVERT(varchar(100), SERVERPROPERTY('productversion')) AS productversion, CONVERT(varchar(100), SERVERPROPERTY('productlevel')) AS productlevel, CONVERT(varchar(100), SERVERPROPERTY('edition')) AS edition";
-    private static final String CONFIG_QUERY = "SELECT configuration_id, CONVERT(varchar(100), value) AS value FROM sys.configurations";
+    private static final String CONFIG_QUERY = "SELECT 'config_id_' + CONVERT(varchar(100), configuration_id) AS config_id, CONVERT(varchar(100), value) AS value FROM sys.configurations";
 
 
     private boolean started;
@@ -69,9 +69,7 @@ public class MSSQLServerComponent<T extends ResourceComponent<?>> implements Dat
 
         // Now transform to String, String and add config_id to it
         for(Map<String, Object> data : gridValues) {
-            for(Map.Entry<String, Object> entry : data.entrySet()) {
-                traitsMap.put("config_id_" + entry.getKey(), (String) entry.getValue());
-            }
+            traitsMap.put((String) data.get("config_id"), (String) data.get("value"));
         }
 
         // Rest, just transform to String, String
