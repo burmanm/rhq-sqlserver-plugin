@@ -29,7 +29,7 @@ public class MSSQLTableComponent implements DatabaseComponent<MSSQLDatabaseCompo
 
 	@Override
 	public AvailabilityType getAvailability() {
-		return AvailabilityType.UP;
+		return resourceContext.getAvailabilityContext().getLastReportedAvailability();
 	}
 
 	@Override
