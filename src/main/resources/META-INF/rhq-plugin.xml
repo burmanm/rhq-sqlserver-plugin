@@ -123,19 +123,21 @@
             <metric displayName="Collation name" property="collation_name" dataType="trait" displayType="summary" description="Collation" />
             <metric displayName="State" property="state_desc" dataType="trait" displayType="summary" description="State of the database" />
             <metric displayName="Recovery model" property="recovery_model_desc" dataType="trait" displayType="summary" description="Recovery model" />
-            <metric displayName="Database size" property="size" measurementType="dynamic" units="bytes" displayType="summary" description="Size of the database in KB" />
+            <metric displayName="Database size" property="size" measurementType="dynamic" units="kilobytes" displayType="summary" description="Size of the database in KB" />
 
             <service name="Datafile" class="MSSQLDataFileComponent" discovery="MSSQLDataFileDiscoveryComponent" description="Database files">
                 <plugin-configuration>
                     <c:simple-property name="logicalName" readOnly="true" />
                 </plugin-configuration>
 
-                <metric displayName="Logical Name" property="logical_name" dataType="trait" displayType="summary" description="Logical name of the datafile" />
-                <metric displayName="File Type" property="file_type" dataType="trait" displayType="summary" description="Filetype of database file" />
+                <metric displayName="Logical Name" property="name" dataType="trait" displayType="summary" description="Logical name of the datafile" />
+                <metric displayName="File Type" property="type_desc" dataType="trait" displayType="summary" description="Filetype of database file" />
+<!--
                 <metric displayName="Filegroup" property="filegroup" dataType="trait" displayType="summary" description="Filegroup datafile belongs to" />
                 <metric displayName="Autogrowth" property="autogrowth_desc" dataType="trait" displayType="summary" description="Autogrowth settings" />
-                <metric displayName="Path" property="path" dataType="trait" displayType="summary" description="Directory the file resides in" />
-                <metric displayName="File Name" property="file_name" dataType="trait" displayType="summary" description="File name" />
+-->
+                <metric displayName="Path" property="physical_name" dataType="trait" displayType="summary" description="Directory the file resides in" />
+                <!--<metric displayName="File Name" property="file_name" dataType="trait" displayType="summary" description="File name" />-->
             </service>
 
             <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
