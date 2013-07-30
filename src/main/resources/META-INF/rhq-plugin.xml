@@ -132,11 +132,12 @@
 
                 <metric displayName="Logical Name" property="name" dataType="trait" displayType="summary" description="Logical name of the datafile" />
                 <metric displayName="File Type" property="type_desc" dataType="trait" displayType="summary" description="Filetype of database file" />
-<!--
                 <metric displayName="Filegroup" property="filegroup" dataType="trait" displayType="summary" description="Filegroup datafile belongs to" />
-                <metric displayName="Autogrowth" property="autogrowth_desc" dataType="trait" displayType="summary" description="Autogrowth settings" />
--->
+                <metric displayName="Maximum filesize" property="max_size" dataType="trait" displayType="summary" description="Maximum filesize to autogrowth" />
+                <metric displayName="Autogrowth" property="growth" dataType="trait" displayType="summary" description="Autogrowth size in MB or %" />
                 <metric displayName="Path" property="physical_name" dataType="trait" displayType="summary" description="Directory the file resides in" />
+                <metric displayName="File size" property="allocated_space" measurementType="dynamic" units="megabytes" displayType="summary" description="Allocated space in MB" />
+                <metric displayName="Available space" property="available_space" measurementType="dynamic" units="megabytes" displayType="summary" description="Available space in the datafile in MB" />
                 <!--<metric displayName="File Name" property="file_name" dataType="trait" displayType="summary" description="File name" />-->
             </service>
 

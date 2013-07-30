@@ -31,8 +31,16 @@ public class MSSQLDataFileComponent implements DatabaseComponent<MSSQLDatabaseCo
     private static String AVAILABLE_STATUS = "ONLINE";
     private static String STATUS_COLUMN = "state_desc";
     private static String AVAILABILITY_QUERY = "SELECT state_desc FROM sys.master_files WHERE file_guid = ?";
-    private static String TRAIT_QUERY = "SELECT m.type_desc, m.name, m.data_space_id, m.physical_name FROM sys.master_files AS m " +
+
+    private static String TRAIT_QUERY = "SELECT m.type_desc, m.name, (CASE WHEN ds.name IS NULL THEN 'ROWS' ELSE ds.name END) AS filegroup, m.physical_name, m.state_desc, " +
+            "(CASE max_size WHEN '-1' THEN 'Unlimited' " +
+            "ELSE CONVERT(varchar(30), CAST(max_size/128.0 AS decimal(30,2))) END) AS max_size, " +
+            "(CASE WHEN m.is_percent_growth = 1 THEN CONVERT(varchar(30), m.growth) + '%' ELSE CONVERT(varchar(30), m.growth) END) AS growth FROM sys.master_files AS m " +
+            "LEFT OUTER JOIN sys.data_spaces AS ds ON m.data_space_id = ds.data_space_id " +
             "WHERE m.file_guid = ?";
+
+    private static String METRIC_QUERY = "SELECT CAST(size/128.0 AS decimal(30,2)) AS allocated_space, CAST((size/128.0 - CAST(FILEPROPERTY(name, 'SpaceUsed') AS int)/128.0) AS decimal(30,2)) AS available_space " +
+            "FROM sys.database_files WHERE file_guid = ?";
 
     @Override
     public Connection getConnection() {
@@ -77,6 +85,7 @@ public class MSSQLDataFileComponent implements DatabaseComponent<MSSQLDatabaseCo
     @Override
     public void getValues(MeasurementReport measurementReport, Set<MeasurementScheduleRequest> measurementScheduleRequests) throws Exception {
         Map<String, Object> traitValues = null;
+        Map<String, Double> metricValues = null;
 
         for (MeasurementScheduleRequest request : measurementScheduleRequests) {
 
@@ -90,6 +99,10 @@ public class MSSQLDataFileComponent implements DatabaseComponent<MSSQLDatabaseCo
                     measurementReport.addData(new MeasurementDataTrait(request, (String) traitValues.get(property)));
                     break;
                 case MEASUREMENT:
+                    if(metricValues == null) {
+                        metricValues = DatabaseQueryUtility.getNumericQueryValues(this, METRIC_QUERY);
+                    }
+                    measurementReport.addData(new MeasurementDataNumeric(request, metricValues.get(property)));
                     break;
                 default:
                     // Not supported here
