@@ -90,13 +90,13 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
                 switch(request.getDataType()) {
                     case TRAIT:
                         if(traitResults == null) {
-                            traitResults = DatabaseQueryUtility.getGridValues(this, TRAIT_QUERY).get(0);
+                            traitResults = DatabaseQueryUtility.getGridValues(this, TRAIT_QUERY, databaseId).get(0);
                         }
                         report.addData(new MeasurementDataTrait(request, (String) traitResults.get(property)));
                         break;
                     case MEASUREMENT:
                         if(numericResults == null) {
-                            numericResults = DatabaseQueryUtility.getNumericQueryValues(this, METRIC_QUERY);
+                            numericResults = DatabaseQueryUtility.getNumericQueryValues(this, METRIC_QUERY, databaseId);
                         }
                         report.addData(new MeasurementDataNumeric(request, numericResults.get(property)));
                         break;
