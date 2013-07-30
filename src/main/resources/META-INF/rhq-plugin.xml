@@ -141,30 +141,25 @@
                 <!--<metric displayName="File Name" property="file_name" dataType="trait" displayType="summary" description="File name" />-->
             </service>
 
-            <service name="Table" class="MSSQLTableComponent" discovery="MSSQLTableDiscoveryComponent"
+            <service name="Table" class="MSSQLObjectComponent" discovery="MSSQLObjectDiscoveryComponent"
 				description="Database table">
 
 				<plugin-configuration>
-					<c:simple-property name="tableName" readOnly="true" />
+					<c:simple-property name="object_name" displayName="Table name" readOnly="true" />
+                    <c:simple-property name="object_type" readOnly="true" type="string" default="U" />
 				</plugin-configuration>
-
-				<metric displayName="Reserved Size" property="reserved"
-					measurementType="dynamic" displayType="summary" units="bytes"
-					description="The reserved amount of data in KB" />
-				<metric displayName="Data Size" property="data"
-					measurementType="dynamic" displayType="summary" units="bytes"
-					description="The amount of data currently stored in KB" />
-				<metric displayName="Index Size" property="index_size"
-					measurementType="dynamic" displayType="summary" units="bytes"
-					description="The amount of data spent in indexes in KB" />
-				<metric displayName="Unused" property="unused" measurementType="dynamic"
-					displayType="summary" units="bytes"
-					description="The amount of unused, but reserved space in KB" />
-				<metric displayName="Rows" property="rows" measurementType="dynamic"
-					defaultOn="false" description="The estimated count of rows in the table." />
 			</service>
 
-			<service name="Query" class="org.rhq.plugins.database.CustomTableComponent"
+            <service name="View" class="MSSQLObjectComponent" discovery="MSSQLObjectDiscoveryComponent"
+                     description="Database view">
+
+                <plugin-configuration>
+                    <c:simple-property name="objectName" displayName="Table name" readOnly="true" />
+                    <c:simple-property name="objectType" readOnly="true" type="string" default="V" />
+                </plugin-configuration>
+            </service>
+
+            <service name="Query" class="org.rhq.plugins.database.CustomTableComponent"
 				discovery="org.rhq.plugins.database.CustomTableDiscoveryComponent"
 				supportsManualAdd="true">
 
