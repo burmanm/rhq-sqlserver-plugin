@@ -25,11 +25,12 @@ public class MSSQLDatabaseDiscoveryComponent implements ResourceDiscoveryCompone
         try {
             statement = context.getParentResourceComponent().getConnection().createStatement();
             resultSet = statement
-                .executeQuery("SELECT name FROM sys.databases");
+                .executeQuery("SELECT name, database_id FROM sys.databases");
             while (resultSet.next()) {
                 String databaseName = resultSet.getString("name");
+                String databaseId = resultSet.getString("database_id");
                 DiscoveredResourceDetails database = new DiscoveredResourceDetails(context.getResourceType(),
-                    databaseName, databaseName, null, "The " + databaseName + " database", null, null);
+                    databaseId, databaseName, null, "The " + databaseName + " database", null, null);
                 database.getPluginConfiguration().put(new PropertySimple("databaseName", databaseName));
                 databases.add(database);
             }

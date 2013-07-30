@@ -17,14 +17,13 @@ import java.util.Set;
  */
 public class MSSQLDataFileDiscoveryComponent implements ResourceDiscoveryComponent<MSSQLDatabaseComponent<?>>  {
 
-    private static String DISCOVER_DATAFILES = "SELECT m.name, m.file_guid FROM sys.master_files AS m INNER JOIN sys.databases AS d ON m.database_id = d.database_id WHERE d.name = ?";
-
+    private static String DISCOVER_DATAFILES = "SELECT m.name, m.file_guid FROM sys.master_files AS m WHERE m.database_id = ?";
 
     @Override
     public Set<DiscoveredResourceDetails> discoverResources(ResourceDiscoveryContext<MSSQLDatabaseComponent<?>> mssqlDatabaseComponentResourceDiscoveryContext) throws InvalidPluginConfigurationException, Exception {
         Set<DiscoveredResourceDetails> discoveredFiles = new HashSet<DiscoveredResourceDetails>();
 
-        List<Map<String, Object>> gridValues = DatabaseQueryUtility.getGridValues(mssqlDatabaseComponentResourceDiscoveryContext.getParentResourceComponent(), DISCOVER_DATAFILES, mssqlDatabaseComponentResourceDiscoveryContext.getParentResourceComponent().getDatabaseName());
+        List<Map<String, Object>> gridValues = DatabaseQueryUtility.getGridValues(mssqlDatabaseComponentResourceDiscoveryContext.getParentResourceComponent(), DISCOVER_DATAFILES, mssqlDatabaseComponentResourceDiscoveryContext.getParentResourceContext().getResourceKey());
         for(Map<String, Object> dataFileRow : gridValues) {
             String datafileName = (String) dataFileRow.get("name");
             String datafileKey = (String) dataFileRow.get("file_guid");

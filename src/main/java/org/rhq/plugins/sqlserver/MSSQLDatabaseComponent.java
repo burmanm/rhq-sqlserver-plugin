@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,18 +23,19 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
     private static Log log = LogFactory.getLog(MSSQLDatabaseComponent.class);
 	
 	private MSSQLServerComponent<?> serverComponent;
-	private String databaseName;
+	private String databaseId;
+    private String databaseName;
 	private static String STATUS_COLUMN = "state_desc";
 	private static String AVAILABLE_STATUS = "ONLINE";
 
-    private static String STATUS_QUERY = "SELECT state_desc FROM sys.databases WHERE name = ?";
-    private static String TRAIT_QUERY = "SELECT d.create_date, d.compatibility_level, d.collation_name, d.state_desc, d.recovery_model_desc FROM sys.databases AS d WHERE d.name = ?";
-    private static String METRIC_QUERY = "SELECT SUM(m.size) * 8 AS size FROM sys.master_files AS m INNER JOIN sys.databases AS d ON m.database_id = d.database_id WHERE d.name = ?";
+    private static String STATUS_QUERY = "SELECT state_desc FROM sys.databases WHERE database_id = ?";
+    private static String TRAIT_QUERY = "SELECT d.create_date, d.compatibility_level, d.collation_name, d.state_desc, d.recovery_model_desc FROM sys.databases AS d WHERE d.database_id = ?";
+    private static String METRIC_QUERY = "SELECT SUM(m.size) * 8 AS size FROM sys.master_files AS m WHERE m.database_id = ?";
 
     @Override
 	public void start(ResourceContext<MSSQLServerComponent<?>> context) throws InvalidPluginConfigurationException {
 		serverComponent = context.getParentResourceComponent();
-		databaseName = context.getResourceKey();
+		databaseId = context.getResourceKey();
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 		try {
 			Connection conn = getConnection();
 			statement = conn.prepareStatement(STATUS_QUERY);
-			statement.setString(1, databaseName);
+			statement.setString(1, databaseId);
 			resultSet = statement.executeQuery();
 
 			if(resultSet.next()) {
@@ -73,10 +73,6 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 		return result;
 	}
 
-    // http://msdn.microsoft.com/en-us/library/ms190326.aspx (get datafile info)
-
-//    name	create_date	compatibility_level	collation_name	state_desc	recovery_model_desc	size
-//    AdventureWorks2012	2013-06-26 22:14:50.260	110	SQL_Latin1_General_CP1_CI_AS	ONLINE	FULL	210688
     public void getValues(MeasurementReport report, Set<MeasurementScheduleRequest> metrics) {
 
         Map<String, Double> numericResults = null;
