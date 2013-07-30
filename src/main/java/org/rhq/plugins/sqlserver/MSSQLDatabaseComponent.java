@@ -21,7 +21,9 @@ import org.rhq.plugins.database.DatabaseQueryUtility;
 public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements DatabaseComponent<MSSQLServerComponent<?>>, AvailabilityFacet, MeasurementFacet {
 
     private static Log log = LogFactory.getLog(MSSQLDatabaseComponent.class);
-	
+
+    private ResourceContext<MSSQLServerComponent<?>> context;
+
 	private MSSQLServerComponent<?> serverComponent;
 	private String databaseId;
     private String databaseName;
@@ -36,7 +38,9 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 	public void start(ResourceContext<MSSQLServerComponent<?>> context) throws InvalidPluginConfigurationException {
 		serverComponent = context.getParentResourceComponent();
 		databaseId = context.getResourceKey();
+        this.context = context;
 	}
+
 
 	@Override
 	public void stop() {
@@ -107,7 +111,7 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
     }
 
 	public String getDatabaseName() {
-		return this.databaseName;
+        return context.getPluginConfiguration().getSimpleValue("databaseName");
 	}
 
     @Override
