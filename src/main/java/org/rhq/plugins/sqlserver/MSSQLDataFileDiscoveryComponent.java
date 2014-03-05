@@ -28,6 +28,11 @@ public class MSSQLDataFileDiscoveryComponent implements ResourceDiscoveryCompone
             String datafileName = (String) dataFileRow.get("name");
             String datafileKey = (String) dataFileRow.get("file_guid");
 
+            if(datafileKey == null) {
+                // This happens with system databases
+                datafileKey = datafileName;
+            }
+
             // Create resource
             DiscoveredResourceDetails service = new DiscoveredResourceDetails(mssqlDatabaseComponentResourceDiscoveryContext.getResourceType(), datafileKey,
                     datafileName, null, null, null, null);
