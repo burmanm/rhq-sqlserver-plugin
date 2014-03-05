@@ -68,8 +68,8 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
 					result = AvailabilityType.UP;
 				}
 			}
-		} catch (SQLException e) {
-			log.error("Received SQLException while executing status, ", e);
+		} catch (Exception e) {
+			log.error("Received Exception while executing status, "  + e.getLocalizedMessage(), e);
 		} finally {
 			DatabaseQueryUtility.close(statement, resultSet);
 		}                                                                                     /**/
@@ -92,7 +92,7 @@ public class MSSQLDatabaseComponent<T extends ResourceComponent<?>> implements D
                         if(traitResults == null) {
                             traitResults = DatabaseQueryUtility.getGridValues(this, TRAIT_QUERY, databaseId).get(0);
                         }
-                        report.addData(new MeasurementDataTrait(request, (String) traitResults.get(property)));
+                        report.addData(new MeasurementDataTrait(request, String.valueOf(traitResults.get(property))));
                         break;
                     case MEASUREMENT:
                         if(numericResults == null) {
