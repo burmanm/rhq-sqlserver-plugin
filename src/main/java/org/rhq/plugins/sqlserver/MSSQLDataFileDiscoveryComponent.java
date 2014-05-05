@@ -28,17 +28,16 @@ public class MSSQLDataFileDiscoveryComponent implements ResourceDiscoveryCompone
             String datafileName = (String) dataFileRow.get("name");
             String datafileKey = (String) dataFileRow.get("file_guid");
 
-            if(datafileKey == null) {
-                // This happens with system databases
-                datafileKey = datafileName;
+            // Some migrated databases do not have guid datafileKey, we're unable to track them reliably.
+            if(datafileKey != null) {
+                datafileKey = datafileKey.trim(); // Sometimes whitespace seems to have appeared at the end, causing casting issues.
+
+                // Create resource
+                DiscoveredResourceDetails service = new DiscoveredResourceDetails(mssqlDatabaseComponentResourceDiscoveryContext.getResourceType(), datafileKey,
+                        datafileName, null, null, null, null);
+                service.getPluginConfiguration().put(new PropertySimple("logicalName", datafileName));
+                discoveredFiles.add(service);
             }
-
-            // Create resource
-            DiscoveredResourceDetails service = new DiscoveredResourceDetails(mssqlDatabaseComponentResourceDiscoveryContext.getResourceType(), datafileKey,
-                    datafileName, null, null, null, null);
-            service.getPluginConfiguration().put(new PropertySimple("logicalName", datafileName));
-            discoveredFiles.add(service);
-
         }
 
         return discoveredFiles;
